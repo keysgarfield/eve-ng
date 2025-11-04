@@ -23,24 +23,29 @@ mkdir -p "$EVE_PATH"
 echo "EVE_PATH: $EVE_PATH"
 echo ""
 
-if [ -f "$ISO_FILE" ]; then
-    echo "ISO file already exists: $ISO_FILE"
-    read -p "Overwrite? (y/n): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Skipping download..."
+if [ -f "$QCOW2_FILE" ]; then
+    echo "QCOW2 file already exists: $QCOW2_FILE"
+    echo "Skipping download and conversion..."
+else
+    if [ -f "$ISO_FILE" ]; then
+        echo "ISO file already exists: $ISO_FILE"
+        read -p "Overwrite? (y/n): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Skipping download..."
+        else
+            echo "Downloading EVE-NG ISO..."
+            wget -O "$ISO_FILE" "$EVE_ISO_URL"
+        fi
     else
         echo "Downloading EVE-NG ISO..."
         wget -O "$ISO_FILE" "$EVE_ISO_URL"
     fi
-else
-    echo "Downloading EVE-NG ISO..."
-    wget -O "$ISO_FILE" "$EVE_ISO_URL"
-fi
 
-echo ""
-echo "Converting ISO to QCOW2 format..."
-qemu-img convert -f raw -O qcow2 "$ISO_FILE" "$QCOW2_FILE"
+    echo ""
+    echo "Converting ISO to QCOW2 format..."
+    qemu-img convert -f raw -O qcow2 "$ISO_FILE" "$QCOW2_FILE"
+fi
 
 echo ""
 echo "Generating libvirt XML configuration..."
