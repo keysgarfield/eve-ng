@@ -62,6 +62,7 @@ cat > "$XML_FILE" <<EOF
   <vcpu placement="static">8</vcpu>
   <os>
     <type arch="x86_64" machine="pc">hvm</type>
+    <boot dev="cdrom"/>
     <boot dev="hd"/>
   </os>
   <features>
@@ -82,12 +83,20 @@ cat > "$XML_FILE" <<EOF
   <on_crash>restart</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type="file" device="cdrom">
+      <driver name="qemu" type="raw"/>
+      <source file="$ISO_FILE"/>
+      <target dev="hdc" bus="ide"/>
+      <readonly/>
+      <address type="drive" controller="0" bus="1" target="0" unit="0"/>
+    </disk>
     <disk type="file" device="disk">
       <driver name="qemu" type="qcow2" cache="writeback"/>
       <source file="$QCOW2_FILE"/>
       <target dev="vda" bus="virtio"/>
       <address type="pci" domain="0x0000" bus="0x00" slot="0x04" function="0x0"/>
     </disk>
+    <controller type="ide" index="0"/>
     <controller type="usb" index="0" model="ich9-ehci1"/>
     <controller type="pci" index="0" model="pci-root"/>
     <interface type="network">
