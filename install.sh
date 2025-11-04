@@ -45,6 +45,9 @@ else
     echo ""
     echo "Converting ISO to QCOW2 format..."
     qemu-img convert -f raw -O qcow2 "$ISO_FILE" "$QCOW2_FILE"
+    
+    echo "Resizing disk to 8G..."
+    qemu-img resize "$QCOW2_FILE" 8G
 fi
 
 echo ""
